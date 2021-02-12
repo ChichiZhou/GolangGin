@@ -2,19 +2,17 @@ package main
 
 import (
 	"fmt"
-	//"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
 )
 
 func sayHello(w http.ResponseWriter, r *http.Request){
-	t,err := template.ParseFiles("./hello.tmpl");
-	if err != nil{
-		fmt.Println("Parse Template fail, err:%v", err);
-		return
-	}
+	// 解析模板
+	t,_ := template.ParseFiles("./hello.tmpl");
+
 	name := "HeZho"
-	err = t.Execute(w, name);
+	// 渲染模板
+	err := t.Execute(w, name);
 	if err != nil {
 		fmt.Println("Render template failed, err:%v", err);
 		return
@@ -30,3 +28,4 @@ func main() {
 		return
 	}
 }
+
