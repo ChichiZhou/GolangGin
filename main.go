@@ -1,10 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
+type UserInfo struct{
+	Username string `form:"name"`
+	Age string `form:"age"`
+}
 func sayHello(c *gin.Context){
 
 	c.HTML(http.StatusOK, "posts/index.tmpl", gin.H{
@@ -65,6 +70,17 @@ func processParam(c *gin.Context){
 	})
 }
 
+func paramBind(c *gin.Context){
+	var u UserInfo
+	c.ShouldBind(&u)
+	fmt.Println(u)
+	c.JSON(http.StatusOK, gin.H{
+		"name": u.Username,
+		"age":u.Age,
+	})
+
+}
+
 // 使用 REST 模式来写
 func main() {
 	r := gin.Default()
@@ -85,6 +101,8 @@ func main() {
 	// 这里的 : 相当于通配符，所以/:name/:age 实际上和上面的 /posts/index 冲突了
 	// 所以这里要加上一个 /user
 	r.GET("/user/:name/:age", processParam)
+	// 注意这里输入的是传入参数
+	r.GET("/user", paramBind)
 
 	r.Run(":9000")
 }
