@@ -47,14 +47,22 @@ func login(c *gin.Context){
 }
 
 func processLogin(c *gin.Context){
-	name := c.PostForm("username")
+	name := c.PostForm("name")
 	password := c.PostForm("password")
 	//password := c.DefaultPostForm("password", "******")
 	c.JSON(http.StatusOK, gin.H{
 		"username": name,
 		"password": password,
 	})
+}
 
+func processParam(c *gin.Context){
+	name := c.Param("name")
+	age := c.Param("age")
+	c.JSON(http.StatusOK, gin.H{
+		"name": name,
+		"age": age,
+	})
 }
 
 // 使用 REST 模式来写
@@ -70,8 +78,13 @@ func main() {
 	r.GET("/posts/hello", helloWorld)
 	r.GET("/json", returnJson)
 	r.GET("/web", returnQuery)
+
 	r.GET("/login", login)
 	r.POST("/login", processLogin)
+
+	// 这里的 : 相当于通配符，所以/:name/:age 实际上和上面的 /posts/index 冲突了
+	// 所以这里要加上一个 /user
+	r.GET("/user/:name/:age", processParam)
 
 	r.Run(":9000")
 }
