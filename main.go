@@ -32,6 +32,16 @@ func helloWorld(c *gin.Context){
 	c.HTML(http.StatusOK, "hello.html", nil)
 }
 
+func middleWare(c *gin.Context){
+	fmt.Println("You are in middleWare NO.1")
+}
+
+func handleIndex(c *gin.Context){
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Everything is OK",
+	})
+}
+
 func returnJson(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{
 		"message":"GO ! HEZHO!!",
@@ -106,6 +116,7 @@ func main() {
 	// 注意这里输入的是传入参数
 	r.GET("/user", paramBind)
 
+	r.GET("/middleware", middleWare, handleIndex)
 	r.NoRoute(func(c *gin.Context){
 		c.HTML(http.StatusNotFound, "404.html", nil)
 	})
