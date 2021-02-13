@@ -14,6 +14,8 @@ func sayHello(c *gin.Context){
 
 func sayHi(c *gin.Context){
 	// 模板渲染
+	// gin.H 是一个 map[string]interface()
+
 	c.HTML(http.StatusOK, "users/index.tmpl", gin.H{
 		"title":"users/index",
 	})
