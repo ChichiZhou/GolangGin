@@ -27,6 +27,12 @@ func helloWorld(c *gin.Context){
 	c.HTML(http.StatusOK, "hello.html", nil)
 }
 
+func returnJson(c *gin.Context){
+	c.JSON(http.StatusOK, gin.H{
+		"message":"GO ! HEZHO!!",
+	})
+}
+
 // 使用 REST 模式来写
 func main() {
 	r := gin.Default()
@@ -38,6 +44,7 @@ func main() {
 	r.GET("/posts/index", sayHello)
 	r.GET("/users/index", sayHi)
 	r.GET("/posts/hello", helloWorld)
+	r.GET("/json", returnJson)
 
 	r.Run(":9000")
 }
