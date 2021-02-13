@@ -6,15 +6,27 @@ import (
 )
 
 func sayHello(c *gin.Context){
-	c.JSON(http.StatusOK, gin.H{
-		"message": "HEZHO, CHARGE !!!!",
+
+	c.HTML(http.StatusOK, "posts/index.tmpl", gin.H{
+		"title":"posts/index",
+	})
+}
+
+func sayHi(c *gin.Context){
+
+	// 模板渲染
+	c.HTML(http.StatusOK, "users/index.tmpl", gin.H{
+		"title":"users/index",
 	})
 }
 
 // 使用 REST 模式来写
 func main() {
 	r := gin.Default()
-	r.GET("/", sayHello)
+	// 模板解析
+	r.LoadHTMLFiles("templates/posts/index.tmpl", "templates/users/index.tmpl")
+	r.GET("/posts/index", sayHello)
+	r.GET("/users/index", sayHi)
 	r.Run(":9000")
 }
 
