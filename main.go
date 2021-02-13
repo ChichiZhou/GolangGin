@@ -83,12 +83,14 @@ func paramBind(c *gin.Context){
 
 // 使用 REST 模式来写
 func main() {
+	// 生成默认的路由
 	r := gin.Default()
 	// 在解析模板之前，要先加载静态文件
 	// 这里的静态文件包括：css, js, 图片
 	r.Static("/statics", "./statics")  // 每一个 / 和 . 都不能少
 	// 模板解析
-	r.LoadHTMLFiles("templates/posts/index.tmpl", "templates/users/index.tmpl", "templates/gets/hello.html", "templates/posts/form.html")
+	r.LoadHTMLFiles("templates/posts/index.tmpl", "templates/users/index.tmpl", "templates/gets/hello.html", "templates/posts/form.html","templates/views/404.html")
+	// 设置路由
 	r.GET("/posts/index", sayHello)
 	r.GET("/users/index", sayHi)
 	r.GET("/posts/hello", helloWorld)
@@ -103,6 +105,10 @@ func main() {
 	r.GET("/user/:name/:age", processParam)
 	// 注意这里输入的是传入参数
 	r.GET("/user", paramBind)
+
+	r.NoRoute(func(c *gin.Context){
+		c.HTML(http.StatusNotFound, "404.html", nil)
+	})
 
 	r.Run(":9000")
 }
