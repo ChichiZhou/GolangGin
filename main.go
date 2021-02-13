@@ -33,6 +33,30 @@ func returnJson(c *gin.Context){
 	})
 }
 
+func returnQuery(c *gin.Context){
+	name := c.Query("query")
+	//name := c.DefaultQuery("query", "someone")
+	//name, ok := c.GetQuery("query")
+	c.JSON(http.StatusOK, gin.H{
+		"name": name,
+	})
+}
+
+func login(c *gin.Context){
+	c.HTML(http.StatusOK, "form.html", nil)
+}
+
+func processLogin(c *gin.Context){
+	name := c.PostForm("username")
+	password := c.PostForm("password")
+	//password := c.DefaultPostForm("password", "******")
+	c.JSON(http.StatusOK, gin.H{
+		"username": name,
+		"password": password,
+	})
+
+}
+
 // 使用 REST 模式来写
 func main() {
 	r := gin.Default()
@@ -40,11 +64,14 @@ func main() {
 	// 这里的静态文件包括：css, js, 图片
 	r.Static("/statics", "./statics")  // 每一个 / 和 . 都不能少
 	// 模板解析
-	r.LoadHTMLFiles("templates/posts/index.tmpl", "templates/users/index.tmpl", "templates/posts/hello.html")
+	r.LoadHTMLFiles("templates/posts/index.tmpl", "templates/users/index.tmpl", "templates/gets/hello.html", "templates/posts/form.html")
 	r.GET("/posts/index", sayHello)
 	r.GET("/users/index", sayHi)
 	r.GET("/posts/hello", helloWorld)
 	r.GET("/json", returnJson)
+	r.GET("/web", returnQuery)
+	r.GET("/login", login)
+	r.POST("/login", processLogin)
 
 	r.Run(":9000")
 }
