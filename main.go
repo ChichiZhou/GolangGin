@@ -11,7 +11,7 @@ func sayHello(w http.ResponseWriter, r *http.Request){
 	t,_ := template.ParseFiles("./hello.tmpl");
 
 	name := "HeZho"
-	// 渲染模板
+	// 渲染模板，第二个是传入的参数
 	err := t.Execute(w, name);
 	if err != nil {
 		fmt.Println("Render template failed, err:%v", err);
