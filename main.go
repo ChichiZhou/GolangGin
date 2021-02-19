@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"time"
 )
 
 type UserInfo struct{
@@ -32,22 +34,13 @@ func helloWorld(c *gin.Context){
 	c.HTML(http.StatusOK, "hello.html", nil)
 }
 
-func middleWare(c *gin.Context){
-	fmt.Println("You are in middleWare NO.1")
-}
-
-func handleIndex(c *gin.Context){
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Everything is OK",
-	})
-}
-
 func returnJson(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{
 		"message":"GO ! HEZHO!!",
 	})
 }
 
+// 从HTML请求中得到参数
 func returnQuery(c *gin.Context){
 	name := c.Query("query")
 	//name := c.DefaultQuery("query", "someone")
@@ -61,6 +54,7 @@ func login(c *gin.Context){
 	c.HTML(http.StatusOK, "form.html", nil)
 }
 
+// 从 form 中得到参数
 func processLogin(c *gin.Context){
 	name := c.PostForm("name")
 	password := c.PostForm("password")
@@ -71,6 +65,7 @@ func processLogin(c *gin.Context){
 	})
 }
 
+// 利用 wildcard 得到参数
 func processParam(c *gin.Context){
 	name := c.Param("name")
 	age := c.Param("age")
@@ -88,13 +83,44 @@ func paramBind(c *gin.Context){
 		"name": u.Username,
 		"age":u.Age,
 	})
-
 }
+
+func middleWare(c *gin.Context){
+	fmt.Println("You are in middleWare NO.1")
+}
+
+func handleIndex(c *gin.Context){
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Everything is OK",
+	})
+}
+
+func countTime(c *gin.Context){
+	start := time.Now()
+	c.Next()  // 继续执行后面的函数
+	cost := time.Since(start)
+	log.Println(cost)
+}
+
+// 中间件的闭包 (什么是闭包？？？)
+// 这里的 flag 就是闭包
+func authMiddleWare(flag bool) gin.HandlerFunc{
+	return func(c *gin.Context){
+		if flag {
+			return
+		} else {
+			c.Next()
+		}
+	}
+}
+
 
 // 使用 REST 模式来写
 func main() {
 	// 生成默认的路由
 	r := gin.Default()
+	// 对所有访问都添加中间件 countTime
+	r.Use(countTime)
 	// 在解析模板之前，要先加载静态文件
 	// 这里的静态文件包括：css, js, 图片
 	r.Static("/statics", "./statics")  // 每一个 / 和 . 都不能少
@@ -114,9 +140,15 @@ func main() {
 	// 所以这里要加上一个 /user
 	r.GET("/user/:name/:age", processParam)
 	// 注意这里输入的是传入参数
+	// http://localhost:9000/user?name=hezho&age=18
 	r.GET("/user", paramBind)
 
+	// 使用这个中间件
 	r.GET("/middleware", middleWare, handleIndex)
+
+
+
+
 	r.NoRoute(func(c *gin.Context){
 		c.HTML(http.StatusNotFound, "404.html", nil)
 	})
